@@ -10,25 +10,23 @@ export default class App extends React.Component {
  
 
   state = {
-    image: "",
-    data: "",
+    photo: "",
     date: new Date()
   }
 
-  // componentDidUpdate () {
-  //     const stateDate = this.state.date
-  //     const kjh = String(stateDate)
-  //     const year = kjh.match(/[0-9]{4}/);
-    
-  //   return year;
-  // }
-  
-  
-  async getData  () {
-    const data = Math.round(Math.random()*30);
-  
-    const response = await fetch(`https://api.nasa.gov/planetary/apod?date=${this.onChange(this.state.date)}-05-${data}&hd=True&api_key=TmzKsJwGltpO9CFAxZbP4JFrG8QipD4IXChaMjmZ`);
+  componentDidMount() {
+    this.getData()
+  }
 
+  async getData  () {
+    console.log(this.state.date)
+
+    const fuultear = this.state.date.getFullYear()
+    const day = this.state.date.getDate()
+    const month = this.state.date.getMonth()
+  
+    const response = await fetch(`https://api.nasa.gov/planetary/apod?date=${fuultear}-${month}-${day}&hd=True&api_key=TmzKsJwGltpO9CFAxZbP4JFrG8QipD4IXChaMjmZ`);
+    
       console.log(response)
     if(!response.ok){
         throw new Error(`we have a problem with fetch`);
@@ -36,62 +34,51 @@ export default class App extends React.Component {
 
     
     return await response.json();
-    
+
+
   }
 
 
-  componentDidMount () {
-    this.getInfo();
+
+
+getInfo () {
+  this.getData()
+  .then((body) => {
+    console.log(body)
+    this.setState({
+      photo: body.url,
+    })
+  })
 }
 
-  getInfo () {
-    this.getData()
-    .then((body) => {
-      this.setState({
-        image: body.url,
-        data: body.date
-      })
-    })
-    console.log(this.state.date)
-    
-  ;}
-
   onChange = (date) => {
-    
-
-    const stateDate = this.state.date
-    const string = String(stateDate)
-    const year = string.match(/[0-9]{4}/)[0];
-    console.log(year)
-
     this.setState({ 
       date,
-      image: this.getData.url
      })
 
-     console.log(this.state.url)
+     this.getInfo()
+     console.log(this.state.photo)
 
-    return year;
+     console.log(this.state)
+  
+
   }
-  
-  
+
   
 
   render(){
 
-    
+    const {photo} = this.state;
 
     
-    
+
     return (
       <div className="App">
-          <img src={this.state.image} alt="kj" className="imageApp"/>
-          <div>
-            <p>{this.state.data}</p>
-          </div>
+          <img src={photo} alt="kj" className="imageApp"/>
           <Calendar 
               onChange={this.onChange}
               value={this.state.date}
+              
           />
       </div>
     )
