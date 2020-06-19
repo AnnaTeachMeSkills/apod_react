@@ -83,7 +83,7 @@ export default class App extends React.Component {
           <div className="AppImage">
             <p>Не удалось открыть фото.</p> 
             <p>Возможно указанный источник не существует.</p>
-            <p>Пожалуйста, выберите другую дату.</p>
+            <p>Пожалуйста, выберите другую дату!</p>
             </div>
           <Calendar 
               onChange={this.onChange}
