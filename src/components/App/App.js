@@ -1,36 +1,33 @@
 import React from 'react';
 import './App.css';
 
-// import NasaService from '../../services/NasaService'
+
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 export default class App extends React.Component {
   
- 
-
   state = {
     photo: 'https://apod.nasa.gov/apod/image/2005/PorpoiseGalaxy_HubbleFraile_1300.jpg',
     date: new Date() , 
-    dateFirst: null
   }
 
 
- 
-  
-
-  componentDidMount() {
-    this.getData()
-
-  
+  async componentDidMount(){
+    const first = sessionStorage.getItem('firstdate')
+    console.log(first)
+    await this.setState({
+      date: new Date(first)
+    })
     console.log(this.state)
-
   }
+
+  
+
 
   async getData  () {
-    console.log(this.state.date)
-
-
+    
+    console.log(this.state)
     const fuultear = this.state.date.getFullYear()
     const day = this.state.date.getDate()
     const month = this.state.date.getMonth()
@@ -41,19 +38,12 @@ export default class App extends React.Component {
         throw new Error(`we have a problem with fetch`);
     }
 
-    
     return await response.json();
-
-
   }
-
-
 
   onChange = (date) => {
    
     console.log(this.state.date)
-
-    
   
     this.setState({ 
       date,
@@ -61,33 +51,46 @@ export default class App extends React.Component {
     
     console.log(this.state.date)
 
-    this.getData(date)
+    this.getData()
      .then((body) => {
        console.log(body)
        console.log(this.state)
-      //  sessionStorage.setItem('firstdate', this.state.date)
+       sessionStorage.setItem('firstdate', this.state.date)
        this.setState({
          photo: body.url,
-         dateFirst: sessionStorage.getItem('firstdate')
        })
       })
+      console.log(this.state)
       
-  
-      sessionStorage.setItem('firstdate', this.state.date)
   }
 
-  
+
+
+ 
 
   render(){
 
-    let {photo} = this.state;
+    let {photo, date} = this.state;
 
     console.log(photo)
+
+    if (date > new Date()){
+      return (
+          <div className="App">
+              <div className='AppUncoorectDate'>
+                <p>Проверьте выбранную дату!</p>
+            </div> 
+              <Calendar 
+                  onChange={this.onChange}
+                  value={this.state.date}
+              />
+          </div>
+      )
+    }
     
     if (photo.indexOf("apod.nasa.gov") === -1) {
       return (
       <div className="App">
-          {/* <img src='https://apod.nasa.gov/apod/image/1403/m78_sharp_960.jpg' alt="photo_of_day"/> */}
           <div className="AppImage">
             <p>Не удалось открыть фото.</p> 
             <p>Возможно указанный источник не существует.</p>
@@ -96,7 +99,6 @@ export default class App extends React.Component {
           <Calendar 
               onChange={this.onChange}
               value={this.state.date}
-              
           />
       </div>
       )
@@ -107,11 +109,11 @@ export default class App extends React.Component {
           <img src={photo} alt="photo_of_day"/>
           <Calendar 
               onChange={this.onChange}
-              value={this.state.date}
-              
+              value={this.state.date}      
           />
       </div>
     )
     }
       
 }
+
